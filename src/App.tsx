@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { AsyncDuckDBConnection } from "@duckdb/duckdb-wasm";
 import { getDB } from "./duckdbEntry";
 import { OPFSDemo } from "./components/OPFSDemo";
-import "./App.css";
 
 type Row = {
   id: string;
@@ -60,9 +59,7 @@ function App() {
         <OPFSDemo />
       </div>
       <h1>DuckDB WASM POC</h1>
-      <div className="card">
-        {ready && <button onClick={addRow}>Add row</button>}
-      </div>
+      <div>{ready && <button onClick={addRow}>Add row</button>}</div>
       <div>
         <table>
           <thead>
