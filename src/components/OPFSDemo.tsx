@@ -1,6 +1,12 @@
 import { getFileFromPath } from '../opfsHelper'
 import { useState, useCallback } from 'react'
 
+declare global {
+  interface Window {
+    showOpenFilePicker: () => Promise<FileSystemFileHandle[]>
+  }
+}
+
 export const OPFSDemo = () => {
   const [filename, setFileName] = useState('')
   const [content, setContent] = useState('')
@@ -14,6 +20,17 @@ export const OPFSDemo = () => {
     const file = await getFileFromPath(filename)
     await file.writeFile(content)
   }, [content, filename])
+  const select = useCallback(async () => {
+    if (typeof window.showOpenFilePicker !== 'function') return
+    try {
+      const [file] = await window.showOpenFilePicker()
+      const textFile = await file.getFile()
+      setFileName(textFile.name)
+      setContent(await textFile.text())
+    } catch (e) {
+      console.error('This browser does not support showOpenFilePicker', e)
+    }
+  }, [])
 
   return (
     <div>
@@ -40,6 +57,9 @@ export const OPFSDemo = () => {
         </button>
         <button className="bg-black text-white p-2 m-2" onClick={write}>
           Write
+        </button>
+        <button className="bg-black text-white p-2 m-2" onClick={select}>
+          Select...
         </button>
       </div>
     </div>
