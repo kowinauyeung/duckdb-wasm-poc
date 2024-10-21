@@ -1,25 +1,26 @@
-import { getFileFromPath } from "../opfsHelper";
-import { useState, useCallback } from "react";
+import { getFileFromPath } from '../opfsHelper'
+import { useState, useCallback } from 'react'
 
 export const OPFSDemo = () => {
-  const [filename, setFileName] = useState("");
-  const [content, setContent] = useState("");
+  const [filename, setFileName] = useState('')
+  const [content, setContent] = useState('')
 
   const read = useCallback(async () => {
-    const file = await getFileFromPath(filename);
-    const fileContent = await file.getContent();
-    setContent(fileContent);
-  }, [filename]);
+    const file = await getFileFromPath(filename)
+    const fileContent = await file.getContent()
+    setContent(fileContent)
+  }, [filename])
   const write = useCallback(async () => {
-    const file = await getFileFromPath(filename);
-    await file.writeFile(content);
-  }, [content, filename]);
+    const file = await getFileFromPath(filename)
+    await file.writeFile(content)
+  }, [content, filename])
 
   return (
     <div>
-      <div>
+      <div className="flex">
         File:
         <input
+          className="border-gray-500 border-solid border-2"
           type="text"
           value={filename}
           onChange={(e) => setFileName(e.target.value)}
@@ -28,14 +29,19 @@ export const OPFSDemo = () => {
       <div>
         Content:
         <textarea
+          className="border-gray-500 border-solid border-2 w-1/2 h-96"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
       </div>
       <div>
-        <button onClick={read}>Read</button>
-        <button onClick={write}>Write</button>
+        <button className="bg-black text-white p-2 m-2" onClick={read}>
+          Read
+        </button>
+        <button className="bg-black text-white p-2 m-2" onClick={write}>
+          Write
+        </button>
       </div>
     </div>
-  );
-};
+  )
+}
