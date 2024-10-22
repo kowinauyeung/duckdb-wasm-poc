@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm'
 import { getDB } from './duckdbEntry'
 import { OPFSDemo } from './components/OPFSDemo'
+import { jsMemory, rtcStat } from './utils/fakeLogs'
+import { createLog, LOG_TYPE, Log } from './utils/logger'
 
 type Row = {
   id: string
@@ -50,6 +52,18 @@ function App() {
       if (connRef.current) {
         connRef.current.close()
       }
+    }
+  }, [])
+
+  useEffect(() => {
+    const logs: Log[] = []
+    const interval = setInterval(() => {
+      logs.push(createLog(LOG_TYPE.RTC_STATS, rtcStat()))
+      logs.push(createLog(LOG_TYPE.JS_MEMORY, jsMemory()))
+      console.log(logs)
+    }, 1000)
+    return () => {
+      clearInterval(interval)
     }
   }, [])
 
