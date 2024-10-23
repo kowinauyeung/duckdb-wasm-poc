@@ -44,14 +44,20 @@ const OPFSFile = (file: FileSystemFileHandle) => ({
   getContent: () => getFileContent(file),
 })
 
+export const getDirectoryFromPath = async (path: string) => {
+  const paths = path.split('/')
+  let parent: FileSystemDirectoryHandle | undefined = undefined
+  for (const p in paths) {
+    parent = await getDirectory(paths[p], parent)
+  }
+  return parent
+}
+
 export const getFileFromPath = async (path: string) => {
   const paths = path.split('/')
   const filename = paths.pop()
   if (!filename) throw 'Invalid path.'
-  let parent: FileSystemDirectoryHandle | undefined = undefined
-  for (const p in paths) {
-    console.log(paths[p])
-    parent = await getDirectory(paths[p], parent)
-  }
-  return OPFSFile(await getFile(filename, parent))
+  const parentDir = await getDirectoryFromPath(paths.join('/'))
+  if (!parentDir) throw 'Invalid directory'
+  return OPFSFile(await getFile(filename, parentDir))
 }

@@ -3,7 +3,7 @@ import { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm'
 import { getDB } from './duckdbEntry'
 import { OPFSDemo } from './components/OPFSDemo'
 import { jsMemory, rtcStat } from './utils/fakeLogs'
-import { createLog, LOG_TYPE, Log } from './utils/logger'
+import { createLog, LOG_TYPE, Log, writeLog } from './utils/logger'
 
 type Row = {
   id: string
@@ -58,12 +58,22 @@ function App() {
   useEffect(() => {
     const logs: Log[] = []
     const interval = setInterval(() => {
-      logs.push(createLog(LOG_TYPE.RTC_STATS, rtcStat()))
+      const webRTCStats = rtcStat()
+      webRTCStats.map((stats) => {
+        const log = createLog(LOG_TYPE.RTC_STATS, stats)
+        logs.push(log)
+        return log
+      })
       logs.push(createLog(LOG_TYPE.JS_MEMORY, jsMemory()))
-      console.log(logs)
     }, 1000)
+    const batchInterval = setInterval(() => {
+      const batch = logs.splice(0, logs.length)
+      writeLog(batch)
+      console.log('Clean batch', batch)
+    }, 60000)
     return () => {
       clearInterval(interval)
+      clearInterval(batchInterval)
     }
   }, [])
 

@@ -1,6 +1,6 @@
-import { getFileFromPath } from '../opfsHelper'
+import { getFileFromPath } from '../utils/opfsHelper'
 import { useState, useCallback } from 'react'
-
+import { getLogFilePath, removeExpiredLogFile } from '../utils/logger'
 declare global {
   interface Window {
     showOpenFilePicker: () => Promise<FileSystemFileHandle[]>
@@ -8,7 +8,7 @@ declare global {
 }
 
 export const OPFSDemo = () => {
-  const [filename, setFileName] = useState('')
+  const [filename, setFileName] = useState(getLogFilePath())
   const [content, setContent] = useState('')
 
   const read = useCallback(async () => {
@@ -60,6 +60,12 @@ export const OPFSDemo = () => {
         </button>
         <button className="bg-black text-white p-2 m-2" onClick={select}>
           Select...
+        </button>
+        <button
+          className="bg-black text-white p-2 m-2"
+          onClick={removeExpiredLogFile}
+        >
+          Clean expired logs
         </button>
       </div>
     </div>
